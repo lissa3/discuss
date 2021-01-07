@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load mptt_tags %}
+
+{% block style %}
+<style>
+  /* foo-foo pl-2 pl-md-5 */
+  /* for md and wider left side pl-2(mobile) pl-md-5==48px (desktop)*/
+
+  /* @media screen and (min-width: 600px) {
+    .children form {
+      margin-left: 0px;
+    }
+  } */
+
+    /* .children {
+      margin-left: -48px;
+      
+    } */
+    /* .children .children form {
+      margin-left: -48px;
+      
+    } */
+    /* .children .children form {
+      margin-left: -96px;
+      
+    } */
+  
+  /* @media screen and (min-width: 600px) {
+    .children form {
+      margin-left: -48px;      
+    }
+    .children .children form {
+      margin-left: -96px;      
+    }
+  } 
+  */
+  
+  
+  
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="row justify-content-md-center pt-5" >
+  <div class="col-md-7 bpost">       
+    <h3>Idea in short version</h3> 
+       <p>{{object.title}}</p>
+    </div>    
+    <div class="col-md-9 bpost">
+      <!-- src="object.get_idea_url}}" -->
+      <!-- <img class="card-img-top"  alt="Card image cap"> -->
+    </div>
+    <div class="col-md-7 bpost">      
+      <div>object.main_text|safe}}</div>
+    </div>
+</div> 
+<hr>
+
+<div class="row justify-content-md-center pt-5" >   
+    
+    <div class="col-md-7">
+      <!-- create a comment: form -->
+      <div>
+        <div id="myDIV" style="display:block">
+          <form id="myForm" method="post">
+            <h3>Create a comment for this idea</h3>          
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+          </form>
+        </div>
+      </div>
+      <!-- end: for form create a comment -->
+      <hr>
+      <div>
+        <!-- rendering all comments -->
+        {% if comments %}
+          {% recursetree comments %}
+          <!-- node == comment -->
+          <div id="{{ node.id }}" class="my-2 p-2 " style="border: 1px solid grey">
+            <div class="d-flex justify-content-between">By {{ node.user.profile.display_name }}<div></div>{{ node.created }}</div>
+            <div>{{ node.body }}</div>
+            <div>Level is {{node.level}}</div>
+            <div>Id is {{node.id}}</div>
+            <hr/>
+            
+            {% if user != node.user %}
+              <button class="btn btn-primary" onclick="formComm({{ node.id }})">Reply</button>
+              {% else %} 
+              <div class="d-flex justify-content-between">  
+                <a onclick="editComment('{{object.slug}}', {{node.id}})" 
+                  id = "edit-link-{{node.id}}"
+                  href="{% url 'comments:edit-comment' object.slug node.id %}"
+                  class="green edit-com">Edit</a>                   
+                <a href="#" class="red">Delete</a>   
+                <!-- href="{% url 'comments:edit-comment' object.slug node.id  -->   
+                
+              </div>           
+            {% endif %}           
+          
+          <!-- node is not root but a child -->
+          {% if not node.is_leaf_node %}  
+            {% if node.level < 3 %}     
+              <div class="indent-to-right">   
+            {% else %}
+              <div></div>    
+            {% endif %}             
+                            
+                {{ children }} 
+              </div>            
+          {% endif %}
+          {% endrecursetree %}
+        {% endif %}
+      </div>
+      <!-- end: rendering all comments -->
+      <hr>
+    </div>       
+    
+</div>  
+{% endblock%}
+
+{% block js %}
+<script>
+  function editComment(ideaSlug,id){
+    let newForm = document.getElementById("newForm");
+    if(document.contains(newForm)){
+      newForm.remove()
+    }
+    event.preventDefault()
+    let target = $(`#edit-link-${id}`);
+    let url = target.attr('href');
+    let divForm = document.getElementById(id);      
+    $.ajax({
+          url:url,
+          method:"GET",
+          success:function(response){
+              console.log(response);
+              let body = response.body;
+              divForm.insertAdjacentHTML('afterend',
+    `<form id='newForm' class='form-send-com py-2' method='post'>\
+      <div >\
+        <div class='d-flex justify-content-between'><h5>Your Comment: </h5> <div><button class='btn btn-outline-secondary' onclick='formClose()'>X\
+            </button></div>\
+      </div></div>\        
+        {% csrf_token %}\
+        <input type="hidden" name="zoo" value="ghghghgh">\
+        <div class="form-group"><textarea name="body" cols="20" rows="2" class="form-control"  title="" required="" id="id_body">${body}</textarea></div> \
+        <div class="form-group"><select name="parent" class="form-control d-none" id="id_parent_">\
+          <option value="${id}" selected="${id}"></option></select>\
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>\
+        
+      </div>\
+    </form>`
+    )           
+    
+              
+    },
+    error:function(err){
+        console.log(err);
+    }
+        })
+    
+  }
+  
+$(".form-send-com").on('submit',function(e){
+      //  for sending reply form as post request
+        e.preventDefault(e);
+        let ideaSlug = this.attr("data-ideaSlug");
+        let comId = this.attr("data-comId");
+        console.log(ideaSlug,comId);
+        let url = `/comments/edit-comment/${ideaSlug}/${comId}/`;
+        console.log("url",url);
+      
+      $.ajax({
+            url:url,
+            data:$(this).serialize(),
+            method:"POST",
+            success:function(response){                
+                console.log(response);                
+                // window.location.reload();
+            },
+            error:function(err){
+                console.log(err);
+            }
+        })
+  })
+
+  // window.location.reload();
+
+  function formComm(id){
+    // check if another form #newForm opened |=> if so close it
+    let newForm = document.getElementById("newForm");
+    if(document.contains(newForm)){
+      newForm.remove()
+    }
+    // insert comment form after a parent comment by click Reply
+    let divForm = document.getElementById(id);
+    divForm.insertAdjacentHTML('afterend',
+    `<form id='newForm' class='form-send-com py-2' method='post'>\
+      <div >\
+        <div class='d-flex justify-content-between'><h5>Your Comment: </h5> <div><button class='btn btn-outline-secondary' onclick='formClose()'>X\
+            </button></div>\
+      </div></div>\        
+        {% csrf_token %}\
+        <div class="form-group"><textarea name="body" cols="20" rows="2" class="form-control" placeholder="leave your comment" title="" required="" id="id_body"></textarea></div> \
+        <div class="form-group"><select name="parent" class="form-control d-none" id="id_parent_">\
+          <option value="${id}" selected="${id}"></option></select>\
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>\
+        
+      </div>\
+    </form>`
+    )
+  }
+  
+  function formClose() {   
+    event.preventDefault()
+     document.getElementById("newForm").remove();
+  }
+  
+
+
+</script>
+
+{% endblock %}
+   
+      
+    
+
+

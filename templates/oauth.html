@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col col-10">
+        <!-- see url namespace=social -->
+        <a href="{% url "social:begin" "github" %}">GitHub</a>        
+        
+    </div>
+</div>
+{% endblock %}

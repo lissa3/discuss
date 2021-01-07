@@ -1,0 +1,19 @@
+
+
+
+<div class="">
+    <form  action="#"  method="POST" id='newForm'>
+        {% csrf_token %}
+    <div class="form-group">
+        <input type="text" name="id_idea" hidden value="{{ideaId}}">
+        <input type="text" name="comment" hidden value="{{commId}}">                        
+        <input type="text" name="parent" hidden value="{{parentId}}">                        
+    </div>
+    <div class="form-group"><textarea name="body" cols="20" rows="2" class="form-control"   required="" id="id_body">{{comBody}}</textarea></div>            
+    <button  type="submit" class = "btn btn-success btn-sm">Edit </button>
+    
+    </form><br>
+    
+</div> 
+<!-- let op: button should be outside form; otherwise triggered submit -->
+<!-- <button class="btn btn-primary">Close Edit Form</button>

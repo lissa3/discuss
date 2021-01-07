@@ -1,0 +1,53 @@
+*{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: antiquewhite;
+}
+.ava {
+    width:100px;
+    border-radius: 50%;
+}
+/* decoration for profile color div */
+.circle {
+    width: 60px;
+    height:60px;
+    border-radius: 50%;
+    font-size: 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+/* commetms in idea detail */
+.comments{
+    background-color: bisque;
+}
+
+.indent-to-right{
+    background-color:#f3e8ec;
+    margin-left: 1rem;;
+  }
+  /* links to edit/delete comments */
+  .red {
+    color: brown;    
+  }
+  .red:hover{
+    color:red;
+  }
+  .green{
+    color:cadetblue;
+  }
+  .green:hover{
+    color:green;
+  }
+  .edit-com{
+    cursor: pointer;
+  }
+  
+ /* temp bg */
+.bpost{
+    background-color: #f5ecec; 
+}

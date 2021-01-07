@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% block title %}change display name{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col col-10">
+        <h1>Your Profile</h1>        
+        <div class="card" style="width:400px">            
+            <div class="card-body">
+              <h4 class="card-title">Display name will be seen by the others</h4>               
+              <form action="{% url 'profiles:name-edit' object.unid %}" method="POST">
+                  {% csrf_token %}
+                  {% bootstrap_form form %}
+                  <input type="submit" value="Change" class="btn btn-success">
+              </form>
+              <a href="{% url 'profiles:profile-info' object.unid %}">Back To Profile</a>
+
+            </div>
+        </div>
+    </div>
+</div>      
+              
+    
+{% endblock %}

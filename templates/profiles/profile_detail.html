@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col col-10">
+        <h1>Your Profile,{{object.get_name}}</h1>        
+        <div class="card" style="width:400px">
+            <!-- <img class="card-img-top ava" src="object.get_avatar_url}}" alt="Card image"> -->
+            <div class="circle" style="background-color: rgb{{object.badge_bg}}">
+              <span>{{object.get_ava_letter}}</span>
+            </div>
+            <div class="card-body">              
+              <p class="card-text">Display Name (seen for others): {{object.display_name}}</p>
+              <p class="text-muted"><a href="{% url 'profiles:name-edit' object.unid %}">You can change your Display Name</a></p>
+              <p class="card-text">First Name: {{object.first_name}}</p>
+              <p class="card-text">Last name: {{object.last_name}}</p>
+              <p class="card-text">LinkedIn Profile {{object.linkedin_profile}}</p>
+              <p class="card-text">Website: {{object.website}}</p>
+              <a href="{% url 'profiles:profile-edit' object.unid %}" class="btn btn-primary">Edit Profile</a>
+            </div>
+          </div>
+        <!-- return reverse('profiles:profile-info', kwargs={'pk': self.user.id}) -->
+    </div>
+</div>
+{% endblock %}
